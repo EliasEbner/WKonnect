@@ -75,7 +75,7 @@
             <input type="text" id="tripIdInput" placeholder="Gib eine Trip-ID ein">
             <button id="fetchTripsButton">Trips laden</button>
         </div>
-        
+
         <table>
             <thead>
                 <tr>
@@ -127,6 +127,18 @@
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <script>
+        // Function to get the 'id' from the query string
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Default trip ID if not provided in the query string
+        const tripIdFromUrl = getQueryParam('id') || '672f5d16032f54f095034854';
+
+
+
+
         async function fetchFilteredTrips(id) {
             try {
                 const response = await fetch('/calculated-db/filter', {

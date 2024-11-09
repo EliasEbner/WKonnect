@@ -202,8 +202,6 @@ function calculateToursForDestination(appointments,
           minTime = cars[wantedCar].bookings[cars[wantedCar].bookings.length - 1].from;
         }
       }
-      console.log(minTime, appointments[a].time);
-
       cars[wantedCar].bookings.push({
         vonZeit: minTime - distances[appointments[a].index][distances.length - 1],
         bisZeit: minTime,
