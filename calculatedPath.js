@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const pathSchema = new mongoose.Schema({
-    index: Number,
     type: String,
     bookings: [
         // {
