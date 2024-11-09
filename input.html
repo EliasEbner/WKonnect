@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <link rel="stylesheet" href="present.css">
+    <meta charset="UTF-8">
+    <title>Termin Formular</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            /* display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; */
+            margin: 0;
+            background-color: #f0f0f0;
+            position: unset;
+            grid-template-rows: 1fr 7fr 1fr;
+        }
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            font-size: 16px;
+        }
+        div {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        input[type="text"], input[type="datetime-local"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        h3 {
+            margin-top: 15px;
+            font-size: 18px;
+            color: #333;
+        }
+        button {
+            padding: 15px 30px;
+            background-color: #007bff;
+            /* color: white; */
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+        label {
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body style="background-color: #FFF5F5;">
+    <div class="logo">
+        <a href="/home"><img src="/images/logo.png"></a>
+    </div>
+    <div class="center">
+        <form action="termin" method="post">
+            <div>
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name">
+            </div>
+    
+            <div>
+                <span>Von</span>
+                <div>
+                    <label for="von-ort">Ort</label>
+                    <input type="text" id="von-ort" name="vonOrt">
+                </div>
+                <div>
+                    <label for="von-strasse">Straße</label>
+                    <input type="text" id="von-strasse" name="vonStrasse">
+                </div>
+            </div>
+    
+            <div>
+                <span>Bis</span>
+                <div>
+                    <label for="bis-ort">Ort</label>
+                    <input type="text" id="bis-ort" name="bisOrt">
+                </div>
+                <div>
+                    <label for="bis-strasse">Straße</label>
+                    <input type="text" id="bis-strasse" name="bisStrasse">
+                </div>
+            </div>
+    
+            <div>
+                <label for="uhrzeit">Uhrzeit</label>
+                <input type="datetime-local" id="uhrzeit" name="terminZeit">
+            </div>
+    
+            <div>
+                <label for="transport-art">Transportart</label>
+                <select id="transport-art" name="transportArt">
+                    <option value="saab">LIEGE</option>
+                    <option value="mercedes">STUHL</option>
+                    <option value="audi">KANN GEHEN</option>
+                </select>
+            </div>
+    
+            <div>
+                <button type="submit">Termin vormerken</button>
+            </div>
+        </form>
+    </div>
+    <div class="footer">WKonnect</div>
+
+    
+</body>
+
+</html>

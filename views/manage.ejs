@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Leaflet Map with Route</title>
+    <link rel="stylesheet" href="/input.css" type="text/css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 2fr 3fr;
+            grid-template-rows: 1fr 1fr;
+            position: fixed;
+            height: 100%;
+            width: 100%;
+        }
+
+        #map {
+            height: 100%;
+            grid-row: span 2;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="db1" style="overflow: scroll; height:100%">
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Von Ort</th>
+                    <th>Von Strasse</th>
+                    <th>Bis Ort</th>
+                    <th>Bis Strasse</th>
+                    <th>Transport Art</th>
+                    <th>Termin Zeit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% termins.forEach(function(termin) { %>
+                    <tr>
+                        <td>
+                            <%= termin.name %>
+                        </td>
+                        <td>
+                            <%= termin.vonOrt %>
+                        </td>
+                        <td>
+                            <%= termin.vonStrasse %>
+                        </td>
+                        <td>
+                            <%= termin.bisOrt %>
+                        </td>
+                        <td>
+                            <%= termin.bisStrasse %>
+                        </td>
+                        <td>
+                            <%= termin.transportArt %>
+                        </td>
+                        <td>
+                            <%= new Date(termin.terminZeit).toLocaleString() %>
+                        </td>
+                    </tr>
+                    <% }); %>
+            </tbody>
+        </table>
+    </div>
+    <div id="map" style="grid-auto-columns: 2;"></div>
+    <div id="db2" style="overflow: scroll; height:100%">
+        <table>
+            <thead>
+                <tr>
+                    <th>Transport ID</th>
+                    <th>Transport Art</th>
+                    <th>Von Ort</th>
+                    <th>Von Straße</th>
+                    <th>Zeit Abfahrt</th>
+                    <th>Bis Ort</th>
+                    <th>Bis Straße</th>
+                    <th>Zeit Ankunft</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% trips.forEach(function(path) { %>
+                    <% path.bookings.forEach(function(booking) { %>
+                        <tr>
+                            <td>
+                                <%= path.index %>
+                            </td> <!-- Assuming Transport ID is the path _id -->
+                            <td>
+                                <%= path.type %>
+                            </td>
+                            <td>
+                                <%= booking.vonOrt %>
+                            </td>
+                            <td>
+                                <%= booking.vonStrasse %>
+                            </td>
+                            <td>
+                                <%= new Date(booking.vonZeit).toLocaleString() %>
+                            </td>
+                            <td>
+                                <%= booking.bisOrt %>
+                            </td>
+                            <td>
+                                <%= booking.bisStrasse %>
+                            </td>
+                            <td>
+                                <%= new Date(booking.bisZeit).toLocaleString() %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                            <% }); %>
+            </tbody>
+        </table>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+    <script>
+        async function fetchFilteredTrips(id) {
+            try {
+                const response = await fetch('/calculated-db/filter', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id }) // Send `index` value in request body
+                });
+
+                if (response.ok) {
+                    const trips = await response.json();
+                    // console.log(trips); // Use the trips array as needed
+                    return trips;
+                } else {
+                    console.error('No trips found with the specified ID');
+                }
+            } catch (error) {
+                console.error('Error fetching filtered trips:', error);
+            }
+        }
+
+
+
+
+        function generateTripStopsForVehicle(trips, vehicleId) {
+            const trip = trips.find(trip => trip._id === vehicleId || trip.type === vehicleId);
+
+            if (!trip) {
+                console.error('Vehicle not found');
+                return;
+            }
+
+            const stops = [];
+            let previousStop = `${trip.bookings[0].vonOrt} ${trip.bookings[0].vonStrasse}`;
+            stops.push(previousStop);
+
+            for (let i = 0; i < trip.bookings.length; i++) {
+                const currentBooking = trip.bookings[i];
+                const departure = `${currentBooking.vonOrt} ${currentBooking.vonStrasse}`;
+                const destination = `${currentBooking.bisOrt} ${currentBooking.bisStrasse}`;
+
+                // Time validation: ensure that times flow logically
+                if (i > 0) {
+                    const previousBooking = trip.bookings[i - 1];
+                    if (previousBooking.bisZeit && currentBooking.vonZeit &&
+                        previousBooking.bisZeit > currentBooking.vonZeit) {
+                        console.warn('Invalid time sequence in bookings');
+                        continue;
+                    }
+                }
+
+                // Add destination as a new stop if it's different from the last stop
+                if (departure === previousStop) {
+                    stops.push(destination);
+                } else {
+                    stops.push(departure, destination);
+                }
+
+                // Update previous stop for the next iteration
+                previousStop = destination;
+            }
+
+            return {
+                tripId: trip._id,
+                stops: stops
+            };
+        }
+
+        // Example usage: Getting the route for a specific vehicle (by tripId or type)
+        const tripsData = [
+            // ... your trips data array
+        ];
+
+        // Call the function with a specific tripId (vehicle's unique identifier)
+        const vehicleRoute = generateTripStopsForVehicle(tripsData, 0);
+        console.log(vehicleRoute);
+
+
+    </script>
+
+
+    <script>
+
+        var map = L.map('map').setView([35.6897, 139.6922], 10); // Example: Tokyo
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // // Base64 image for the custom icon (replace this string with your actual Base64 image string)
+        // var customIconBase64 = "data:image/png;base64,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";  // Your Base64 string here
+
+        // // Custom icon with the Base64 image
+        // var customIcon = L.icon({
+        //     iconUrl: customIconBase64,
+        //     iconSize: [32, 32],  // Size of the icon
+        //     iconAnchor: [16, 32],  // Anchor point (adjust this based on icon size)
+        //     popupAnchor: [0, -32]  // Popup anchor point (relative to the icon)
+        // });
+
+        // // Array of marker positions
+        // var markers = [
+        //     { lat: 46.628740362932334, lng: 10.77809573562757, name: "Krankenhaus Schlanders" },
+        //     { lat: 46.67718530417083, lng: 11.151400983782077, name: "Krankenhaus Meran" },
+        //     { lat: 46.49872859855921, lng: 11.310619555015075, name: "Krankenhaus Bozen" },
+        //     { lat: 46.89823087304331, lng: 11.42576048257056, name: "Krankenhaus Sterzing" },
+        //     { lat: 46.72422561430878, lng: 11.647856661695842, name: "Krankenhaus Sterzing" },
+        //     { lat: 46.79975306004071, lng: 11.936700468446343, name: "Krankenhaus Bruneck" },
+        //     { lat: 46.73375015565348, lng: 12.284131632113018, name: "Krankenhaus Innichen" }
+        // ];
+
+        // // Add markers with custom icons to the map
+        // markers.forEach(function (marker) {
+        //     L.marker([marker.lat, marker.lng], { icon: customIcon })
+        //         .addTo(map)
+        //         .bindPopup(marker.name);
+        // });
+
+        // // var waypoints = [
+        // //     L.latLng(46.89083628452006, 11.415613112907305), // Tokyo
+        // //     L.latLng(46.496338813837795, 11.35852786048153),  // Delhi
+        // //     L.latLng(46.570088202592224, 11.722070345156462)   // London
+        // // ];
+
+        // L.Routing.control({
+        //     waypoints: waypoints,
+        //     routeWhileDragging: true
+        // }).addTo(map);
+    </script>
+</body>
+
+</html>

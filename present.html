@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <link rel="stylesheet" href="present.css">
+</head>
+<body style="background-color: #FFF5F5;">
+    <div class="logo">
+        <a href="/home"><img src="/images/logo.png"></a>
+    </div>
+    <div class="center">
+        <div class="text-box">
+            <div class="box"><div class="img-wrapper"><img src="/images/dude.svg"></div><div>Sample text.</div></div>
+        </div>
+        <div class="detected-information">
+            <div class="detected-info-title">Detected Information:</div>
+            <div class="detected-info-box">
+            </div>
+        </div>
+    </div>
+    <div class="footer">WKonnect</div>
+
+    <script>
+        const textBox = document.querySelector('.text-box');
+        const detectedInfoBox = document.querySelector('.detected-info-box');
+    
+        function resetDetectedInfoBox() {
+            while (detectedInfoBox.firstChild) {
+                detectedInfoBox.removeChild(detectedInfoBox.firstChild);
+            }
+        }
+    
+        const eventSource = new EventSource('/events');
+    
+        eventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'newText') {
+                const newBox = document.createElement('div');
+                newBox.classList.add('box', 'animated-box'); // Add animation class
+    
+                const imgWrapper = document.createElement('div');
+                imgWrapper.classList.add('img-wrapper');
+                let img = document.createElement('img');
+                img.src = data.textType === 'bot' ? '/images/bot.svg' : '/images/dude.svg';
+                imgWrapper.appendChild(img);
+    
+                const textDiv = document.createElement('div');
+                textDiv.textContent = data.text;
+    
+                newBox.appendChild(imgWrapper);
+                newBox.appendChild(textDiv);
+    
+                textBox.appendChild(newBox);
+    
+                // Remove the animation class after animation ends
+                newBox.addEventListener('animationend', () => {
+                    newBox.classList.remove('animated-box');
+                });
+    
+                const boxes = textBox.querySelectorAll('.box');
+                if (boxes.length > 5) {
+                    textBox.removeChild(boxes[0]);
+                }
+            } else if (data.type === 'dataRecognized') {
+                const newInfo = document.createElement('div');
+                newInfo.classList.add('detected-info', 'animated-info'); // Add animation class
+                newInfo.textContent = data.info;
+    
+                detectedInfoBox.appendChild(newInfo);
+    
+                // Remove the animation class after animation ends
+                newInfo.addEventListener('animationend', () => {
+                    newInfo.classList.remove('animated-info');
+                });
+            } else if (data.type === 'resetInfo') {
+                resetDetectedInfoBox();
+            }
+        };
+    </script>
+    
+</body>
+</html>

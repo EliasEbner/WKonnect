@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Leaflet Map with Route</title>
+    <link rel="stylesheet" href="/input.css" type="text/css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            grid-template-rows: 1fr 1fr;
+            position: fixed;
+            height: 100%;
+            width: 100%;
+        }
+
+        #map {
+            height: 100%;
+            grid-row: span 2;
+            width: 100%;
+        }
+
+        table {
+            margin: 10px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Transport ID</th>
+                <th>Transport Art</th>
+                <th>Von Ort</th>
+                <th>Von Straße</th>
+                <th>Zeit Abfahrt</th>
+                <th>Bis Ort</th>
+                <th>Bis Straße</th>
+                <th>Zeit Ankunft</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% trips.forEach(function(path) { %>
+                <% path.bookings.forEach(function(booking) { %>
+                    <tr>
+                        <td><%= path._id %></td> <!-- Assuming Transport ID is the path _id -->
+                        <td><%= path.type %></td>
+                        <td><%= booking.vonOrt %></td>
+                        <td><%= booking.vonStrasse %></td>
+                        <td><%= new Date(booking.vonZeit).toLocaleString() %></td>
+                        <td><%= booking.bisOrt %></td>
+                        <td><%= booking.bisStrasse %></td>
+                        <td><%= new Date(booking.bisZeit).toLocaleString() %></td>
+                    </tr>
+                <% }); %>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+
+</html>

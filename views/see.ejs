@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termin List</title>
+    <link rel="stylesheet" href="/input.css" type="text/css">
+</head>
+<body>
+    <h1>Termin List</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Von Ort</th>
+                <th>Von Strasse</th>
+                <th>Bis Ort</th>
+                <th>Bis Strasse</th>
+                <th>Transport Art</th>
+                <th>Termin Zeit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% termins.forEach(function(termin) { %>
+                <tr>
+                    <td><%= termin.name %></td>
+                    <td><%= termin.vonOrt %></td>
+                    <td><%= termin.vonStrasse %></td>
+                    <td><%= termin.bisOrt %></td>
+                    <td><%= termin.bisStrasse %></td>
+                    <td><%= termin.transportArt %></td>
+                    <td><%= new Date(termin.terminZeit).toLocaleString() %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>

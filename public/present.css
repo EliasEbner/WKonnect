@@ -1,0 +1,115 @@
+.ai-box, .speaker-box {
+    display: grid;
+}
+
+.logo {
+    padding: 1em;
+}
+
+.center {
+    width: 63%;
+    margin: auto;
+}
+
+.text-box {
+    display: block;
+    margin-bottom: 40px;
+}
+
+.detected-info-title {
+    text-align: center;
+    font-size: .85em;
+    margin: 1em;
+}
+
+.detected-info-box {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.detected-info {
+    background-color: #0001;
+    font-weight: 300;
+    border-radius: 12px;
+    padding: 6px 18px;
+}
+
+.footer {
+    text-align: right;
+    padding: 15px;
+    color: gray;
+    font-weight: 500;
+}
+
+.box {
+    display: grid;
+    grid-template-columns: 49px 1fr;
+    font-weight: 600;
+    margin: 7px;
+    line-height: normal;
+}
+
+.box img {
+    height: 27px;
+}
+
+body {
+    height: 100%;
+    display: grid;
+    grid-template-rows: 1fr 5fr 1fr;
+    width: 100%;
+    position: fixed;
+    font-size: 25px;
+}
+
+.img-wrapper {
+    position: relative;
+}
+
+.img-wrapper img {
+    position: absolute;
+    bottom: 4px;
+}
+
+/* Fading effect based on position */
+.text-box div.box:nth-child(1) { opacity: 0.1; }
+.text-box div.box:nth-child(2) { opacity: 0.4; }
+.text-box div.box:nth-child(3) { opacity: 0.7; }
+.text-box div.box:nth-child(4) { opacity: 0.95; }
+.text-box div.box:nth-child(5) { opacity: 1; }
+
+/* Animation for new elements to fade in and slide up */
+@keyframes fadeInSlideUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px); /* Slide up from 20px below */
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply animation to newly added boxes */
+.box.animated-box {
+    opacity: 1 !important; /* Ensure it overrides the default fading */
+    animation: fadeInSlideUp 1.5s ease forwards;
+}
+
+/* Animation for recognized data to fade in and scale up */
+@keyframes fadeInScaleUp {
+    0% {
+        opacity: 0;
+        transform: scale(0.9); /* Slightly smaller at the start */
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1); /* Full size */
+    }
+}
+
+.detected-info.animated-info {
+    opacity: 1 !important; /* Ensure it overrides the default fading */
+    animation: fadeInScaleUp 0.5s ease forwards;
+}
