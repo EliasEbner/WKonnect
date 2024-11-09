@@ -264,122 +264,122 @@ app.get('/home',
   });
 
 app.get('/calculate', async (req, res) => {
-  // const query = { terminZeit: {} };
-  // query.terminZeit.$gte = new Date('2020-01-02T00:12');
-  // query.terminZeit.$lte = new Date('2020-01-02T23:12');
+  const query = { terminZeit: {} };
+  query.terminZeit.$gte = new Date('2020-01-02T00:12');
+  query.terminZeit.$lte = new Date('2020-01-02T23:12');
 
-  // const termins = await Termin.find(query);
+  const termins = await Termin.find(query);
 
-  // for (t in termins) {
-  //   if (t.vonStrasse in ['BONVICINI',
-  //     'BONVICINI-RADIO',
-  //     'BONVICINI KLINIK',
-  //     'KRANKENHAUS',
-  //     'NIERENZENTRUM',
-  //     'NZ - NIERENZENTRUM',
-  //     'VILLA MELITTA KLINIK',
-  //     'VILLA ST. ANNA']) {
-  //     let tempOrt = t.vonOrt;
-  //     let tempStrasse = t.vonStrasse;
-  //     t.vonOrt = t.bisOrt;
-  //     t.vonStrasse = t.bisStrasse;
-  //     t.bisOrt = tempOrt;
-  //     t.bisStrasse = tempStrasse;
-  //   }
-  // }
+  for (t in termins) {
+    if (t.vonStrasse in ['BONVICINI',
+      'BONVICINI-RADIO',
+      'BONVICINI KLINIK',
+      'KRANKENHAUS',
+      'NIERENZENTRUM',
+      'NZ - NIERENZENTRUM',
+      'VILLA MELITTA KLINIK',
+      'VILLA ST. ANNA']) {
+      let tempOrt = t.vonOrt;
+      let tempStrasse = t.vonStrasse;
+      t.vonOrt = t.bisOrt;
+      t.vonStrasse = t.bisStrasse;
+      t.bisOrt = tempOrt;
+      t.bisStrasse = tempStrasse;
+    }
+  }
 
 
-  // const groupByLocation = termins.reduce((map,
-  //   obj) => {
-  //   const { bisOrt, bisStrasse,
-  //     ...rest } = obj;
-  //   if (!map.has(bisOrt + ', ' + bisStrasse)) map.set(bisOrt + ', ' + bisStrasse,
-  //     []);
-  //   map.get(bisOrt + ', ' + bisStrasse).push(obj);
-  //   return map;
-  // },
-  //   new Map());
+  const groupByLocation = termins.reduce((map,
+    obj) => {
+    const { bisOrt, bisStrasse,
+      ...rest } = obj;
+    if (!map.has(bisOrt + ', ' + bisStrasse)) map.set(bisOrt + ', ' + bisStrasse,
+      []);
+    map.get(bisOrt + ', ' + bisStrasse).push(obj);
+    return map;
+  },
+    new Map());
 
-  // let results = [];
+  let results = [];
 
-  // for (let [key, value] of groupByLocation) {
-  //   let cars = [{
-  //     index: 0,
-  //     type: 'KTW',
-  //     bookings: []
-  //   }];
-  //   let distances = await getDistanceMatrix(value,
-  //     key);
-  //   const appointments = [];
+  for (let [key, value] of groupByLocation) {
+    let cars = [{
+      index: 0,
+      type: 'KTW',
+      bookings: []
+    }];
+    let distances = await getDistanceMatrix(value,
+      key);
+    const appointments = [];
 
-  //   for (let t = 0; t < value.length; ++t) {
-  //     const midnight = new Date(value[t].terminZeit.getFullYear(),
-  //       value[t].terminZeit.getMonth(),
-  //       value[t].terminZeit.getDate());
-  //     const diff = value[t].terminZeit - midnight;
+    for (let t = 0; t < value.length; ++t) {
+      const midnight = new Date(value[t].terminZeit.getFullYear(),
+        value[t].terminZeit.getMonth(),
+        value[t].terminZeit.getDate());
+      const diff = value[t].terminZeit - midnight;
 
-  //     // Convert the difference from milliseconds to minutes
-  //     const minutes = Math.floor(diff / 1000 / 60);
-  //     let type;
-  //     if (value[t].transportArt.toLowerCase() == 'kann gehen')
-  //       type = 0;
-  //     else if (value[t].transportArt.toLowerCase() == 'stuhl')
-  //       type = 1;
-  //     else
-  //       type = 2;
+      // Convert the difference from milliseconds to minutes
+      const minutes = Math.floor(diff / 1000 / 60);
+      let type;
+      if (value[t].transportArt.toLowerCase() == 'kann gehen')
+        type = 0;
+      else if (value[t].transportArt.toLowerCase() == 'stuhl')
+        type = 1;
+      else
+        type = 2;
 
-  //     appointments.push({
-  //       time: minutes,
-  //       type: type,
-  //       index: t,
-  //       vonOrt: value[t].vonOrt,
-  //       vonStrasse: value[t].vonStrasse,
-  //       bisOrt: value[t].bisOrt,
-  //       bisStrasse: value[t].bisStrasse
-  //     });
-  //   }
-  //   results.push(calculateToursForDestination(appointments,
-  //     cars,
-  //     distances));
-  // };
+      appointments.push({
+        time: minutes,
+        type: type,
+        index: t,
+        vonOrt: value[t].vonOrt,
+        vonStrasse: value[t].vonStrasse,
+        bisOrt: value[t].bisOrt,
+        bisStrasse: value[t].bisStrasse
+      });
+    }
+    results.push(calculateToursForDestination(appointments,
+      cars,
+      distances));
+  };
 
   // # index 5 isch es kronkenhaus
   // kronkenhaus isch net im array. isch last index im distances arr
   // types: stehend 0, sitzend 1,      liegend 2
-  let appointments = [
-    { time: 600, type: 0, index: 0 },
-    { time: 660, type: 2, index: 1 },
-    { time: 720, type: 0, index: 2 },
-    { time: 745, type: 1, index: 3 },
-    { time: 720, type: 2, index: 4 }];
+  // let appointments = [
+  //   { time: 600, type: 0, index: 0 },
+  //   { time: 660, type: 2, index: 1 },
+  //   { time: 720, type: 0, index: 2 },
+  //   { time: 745, type: 1, index: 3 },
+  //   { time: 720, type: 2, index: 4 }];
 
-  let cars = [{
-    index: 0,
-    type: 'KTW',
-    bookings: []
-  }];
-  // distances in minutes
-  let distances = [[0, 30, 35, 40, 100, 20],
-  [30, 0, 50, 30, 100, 15],
-  [35, 50, 0, 10, 50, 15],
-  [40, 30, 10, 0, 60, 10],
-  [100, 100, 50, 60, 0, 65],
-  [20, 15, 15, 10, 65, 0]];
-  // try {
-  //   for (let r of results) {
-  //     for (let p of r) {
-  //       // console.log(p, '\n\n');
-  //       path = new CalculatedPath(p);
-  //       await path.save();
-  //     }
-  //   }
-  //   // res.status(201).send('Data stored successfully!');
-  // } catch (error) {
-  //   console.error(error);
-  //   res.status(500).send('Error storing data!');
-  // }
-  // res.status(200).send(results);
-  res.status(200).send(calculateToursForDestination(appointments, cars, distances));
+  // let cars = [{
+  //   index: 0,
+  //   type: 'KTW',
+  //   bookings: []
+  // }];
+  // // distances in minutes
+  // let distances = [[0, 30, 35, 40, 100, 20],
+  // [30, 0, 50, 30, 100, 15],
+  // [35, 50, 0, 10, 50, 15],
+  // [40, 30, 10, 0, 60, 10],
+  // [100, 100, 50, 60, 0, 65],
+  // [20, 15, 15, 10, 65, 0]];
+  try {
+    for (let r of results) {
+      for (let p of r) {
+        // console.log(p, '\n\n');
+        path = new CalculatedPath(p);
+        await path.save();
+      }
+    }
+    // res.status(201).send('Data stored successfully!');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error storing data!');
+  }
+  res.status(200).send(results);
+  // res.status(200).send(calculateToursForDestination(appointments, cars, distances));
 });
 
 app.get('/input',

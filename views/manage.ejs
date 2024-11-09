@@ -213,7 +213,7 @@
         // Main function to initialize the map and load waypoints
         async function initializeMap() {
             // Get the waypoints by calling the async fetchFilteredTrips function
-            const waypoints = await fetchFilteredTrips("672f5d16032f54f095034854");
+            const waypoints = await fetchFilteredTrips("tripIdFromUrl");
 
             // Ensure that the waypoints have been retrieved before initializing the map
             if (waypoints.length > 0) {
@@ -245,7 +245,8 @@
 
             if (tripId) {
                 // Wenn eine ID eingegeben wurde, rufe fetchFilteredTrips auf
-                const waypoints = await fetchFilteredTrips(tripId);
+                const waypoints = await fetchFilteredTrips(tripIdFromUrl);
+
 
                 // Füge den Code hinzu, um die Waypoints auf der Karte zu setzen
                 if (waypoints && waypoints.length > 0) {
