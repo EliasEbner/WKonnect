@@ -1,2 +1,2 @@
 # WKonnect
-Management Weißes Kreuz
+Management Weißes Kreuz.
